@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Meeting AI Analyzer</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f9;
+            text-align: center;
+            padding: 20px;
+        }
+
+        textarea {
+            width: 60%;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .card {
+            background: white;
+            margin: 15px auto;
+            padding: 15px;
+            width: 60%;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>🤖 Meeting AI Analyzer</h1>
+
+<textarea id="inputText" rows="5" placeholder="Paste meeting text..."></textarea>
+<br><br>
+
+<button onclick="analyze()">Analyze</button>
+
+<div id="result"></div>
+
+<script>
+async function analyze() {
+    let text = document.getElementById("inputText").value;
+
+    let response = await fetch("http://127.0.0.1:8000/analyze", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ text: text })
+    });
+
+    let data = await response.json();
+
+    let output = "";
+
+    data.results.forEach(item => {
+
+  output += `
+  <div class="card">
+    <b>Decision:</b> ${item.decision} <br>
+    <b>Risks:</b> ${item.risks.join(", ")}
+  </div>
+  `;
+
+});
+
+output += `<h3>Summary:</h3><p>${data.summary}</p>`;
+    
+    document.getElementById("result").innerHTML = output;
+}
+</script>
+
+</body>
+</html>
